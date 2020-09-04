@@ -1,0 +1,9 @@
+---
+ - hosts: sever
+   user: xyz
+   become: true
+   become_user: root
+   roles:
+    - redis_7000
+#    - cluster
+#    - pidfix
