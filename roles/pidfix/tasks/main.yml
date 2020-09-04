@@ -1,28 +1,8 @@
 ---
 
-#- name: get info for redis init files
-#  shell: cd  /etc/init.d/ && ls -ltrh | grep redis | awk '{print $9}'
-#  register: redis_info
-
-#- name: get redis conf
-#  shell: ls -ltrh /etc/redis  | grep conf | awk -F' ' '{print $9}'
-#  register: redis_conf
-
-#- debug:
-#    var: redis_info.stdout
-
 - name: list of the .conf files and store it in register
   raw: find /etc/init.d/ -type f -name "redis*"
   register: raw_dir
-
-#- find:
-#    paths: "/etc/init.d/"
-#    patterns: "redis*"
-#  register: repos
-
-#- name: disable all repos
-#  replace: dest={{item}} regexp="^PIDFILE=/home/deploy/redis_${REDISPORT}" replace="PIDFILE=/var/run/redis/redis_${REDISPORT}.pid"
-#  with_items: "{{ raw_dir.stdout_lines }}"
 
 
 - name: disable all repos
@@ -39,15 +19,6 @@
     line: 'mkdir -p /var/run/redis ; chown redis /var/run/redis'
   with_items: "{{ raw_dir.stdout_lines }}"
 
-#- name: change config prop
-#  lineinfile:
-#    path: /etc/init.d/redis_6000.conf
-#    regexp: '^PIDFILE'
-#    line: 'pidfile /var/run/redis/redis_6000'
-#    backrefs: yes
-
-
-
 - name: list of the .conf files and store it in register
   raw: find /etc/redis/ -type f -name "*.conf"
   register: red_conf_dir
@@ -56,18 +27,8 @@
   raw: ls -ltrh /etc/init.d/ | grep redis | awk -F ' ' '{print $9}'  | awk -F'_' '{print $2}'
   register: port 
 
-#- name: change config prop
-#  lineinfile: 
-#    path: "{{ item }}" 
-#    regexp: '^pidfile'
-#    line: 'pidfile /var/run/redis/redis'
-#    backrefs: yes
-#  with_items: "{{ red_conf_dir.stdout_lines }}"
 
 - name: Change configuration port
   shell: sed -i 's/pidfile \/home\/deploy\/redis_{{ item }}/pidfile \/var\/run\/redis/g' /etc/redis/{{ item }}.conf 
- # shell: sed -i 's/pidfile "\/home\/redis\/sentinel_{{ item }}\/sentinel_{{ item }}.pid"/pidfile "\/var\/run\/redis\/redis_{{ item }}.pid"/g' /etc/redis/{{ item }}.conf
- # shell: sed -i 's/pidfile "\/home\/redis\/redis_{{ item }}\/redis_{{ item }}.pid"/pidfile "\/var\/run\/redis\/redis_{{ item }}.pid"/g' /etc/redis/{{ item }}.conf
-  #shell:  sed -i 's/pidfile \/var\/run\/redis\/redis/pidfile \/var\/run\/redis\/redis_{{ item }}\.pid/g' /etc/redis/{{ item }}.conf 
   with_items: "{{ port.stdout_lines }}"
 
