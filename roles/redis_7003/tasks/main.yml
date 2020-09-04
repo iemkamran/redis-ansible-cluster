@@ -1,0 +1,100 @@
+---
+
+ - name: create redis user
+   user: name=redis  createhome=no shell=/bin/false system=yes state=present
+ 
+ - name: Create redis directory
+   file:
+    path: /home/redis
+    state: directory
+    owner: redis
+    mode: 0775
+
+ - name: Download Redis
+   shell: cd /home/redis && wget http://download.redis.io/releases/redis-6.0.7.tar.gz
+
+ - name: Untar redis file
+   unarchive:
+    src: /home/redis/redis-6.0.7.tar.gz
+    dest: /home/redis
+    copy: no
+
+ - name: install gcc
+   shell: yum install gcc tcl wget -y
+
+ - name: Ensure required packages are installed
+   yum: name={{ item }} state=present
+   with_items:
+    - ruby
+    - rubygems
+    - tar
+    - make
+
+
+ - name: make sure that /etc/redis exists
+   file: path=/etc/redis state=directory owner=root group=root mode=0755
+
+ - name:
+   shell: cd /home/redis/redis-6.0.7/deps && make geohash-int hiredis jemalloc linenoise lua
+   shell: cd /home/redis/redis-6.0.7 && make test
+   shell: cd /home/redis/redis-6.0.7 && make install
+ 
+ - unarchive: src=redis-ansible-cluster/redis-dist.tar dest=/opt owner=root group=root mode=0755
+
+ - name: Gem install for redis -v 3.3.5
+   shell: gem install redis -v 3.3.5
+
+ - name: install pexpect
+   pip:
+     name: pexpect
+   become: yes
+                                                                              
+ - name: Generic question with multiple different responses
+   expect:
+    command: /opt/redis-dist/bin/make-redis-nodes.sh 
+    responses:
+      (?i)No of nodes to be created on this server : 3
+      (?i)Enter base port : 7003
+      (?i)Enter bind IP address : 10.x.x.x
+    timeout: 300
+
+ - name: 'Remove perm.sh from crontab'
+   shell: crontab -r
+   ignore_errors: true 
+
+ - name: changing ownership of /etc/redis/7...conf file
+   find:
+     paths: /etc/redis/
+     file_type: file
+     patterns: "*.conf"
+   register: filelist
+
+ - name: change permissions
+   file:
+     path: "{{ item.path }}"
+     state: file
+     owner: redis
+     group: redis
+     mode: "0775"
+   with_items: "{{ filelist.files }}"
+
+ - name: copy redis tunning file
+   template:
+     src:  10-redis-tuning.conf.j2
+     dest: "/etc/sysctl.d/10-redis-tuning.conf"
+
+ - lineinfile:
+     path: /etc/rc.local
+     line: 'echo never > /sys/kernel/mm/transparent_hugepage/enabled'
+
+ - name: changes permission for /etc/rc.d/rc.local
+   shell: "chmod +x /etc/rc.d/rc.local"
+
+ - name: start redis 7003
+   shell: /etc/init.d/redis_7003 start
+ 
+ - name: start redis 7004
+   shell: /etc/init.d/redis_7004 start
+ 
+ - name: start redis 7005
+   shell: /etc/init.d/redis_7005 start
