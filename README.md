@@ -25,7 +25,7 @@ Including an example of how to use your role (for instance, with variables passe
     
 usage:
 
-Declare the number of ports expected in the node and bimnd the port to that node.
+Declare the number of ports expected in the node and bind the port to that node.
 ```
 - name: Generic question with multiple different responses
    expect:
