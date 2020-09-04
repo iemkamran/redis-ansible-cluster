@@ -26,7 +26,7 @@ Including an example of how to use your role (for instance, with variables passe
 usage:
 
 Declare the number of ports expected in the node and bimnd the port to that node.
-
+```
 - name: Generic question with multiple different responses
    expect:
     command: /opt/redis-dist/bin/make-redis-nodes.sh
@@ -35,6 +35,6 @@ Declare the number of ports expected in the node and bimnd the port to that node
       (?i)Enter base port : 7000
       (?i)Enter bind IP address : 10.x.x.x
     timeout: 300
-    
+```
     
     
