@@ -12,7 +12,7 @@ A list of other roles hosted on Galaxy should go here, plus any details in regar
 
 Example Playbook
 Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
+```
 ---
  - hosts: Server
    user: xyz
@@ -22,7 +22,7 @@ Including an example of how to use your role (for instance, with variables passe
     - redis_7000
     - cluster    
     - pidfix:
-    
+```    
 usage:
 
 Declare the number of ports expected in the node and bind the port to that node.
@@ -36,5 +36,6 @@ Declare the number of ports expected in the node and bind the port to that node.
       (?i)Enter bind IP address : 10.x.x.x
     timeout: 300
 ```
-    
+
+
     
