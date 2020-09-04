@@ -23,8 +23,18 @@ Including an example of how to use your role (for instance, with variables passe
     - cluster    
     - pidfix:
     
-    
-    
+usage:
+
+Declare the number of ports expected in the node and bimnd the port to that node.
+
+- name: Generic question with multiple different responses
+   expect:
+    command: /opt/redis-dist/bin/make-redis-nodes.sh
+    responses:
+      (?i)No of nodes to be created on this server : 3
+      (?i)Enter base port : 7000
+      (?i)Enter bind IP address : 10.x.x.x
+    timeout: 300
     
     
     
