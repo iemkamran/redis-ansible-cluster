@@ -37,5 +37,7 @@ Declare the number of ports expected in the node and bind the port to that node.
     timeout: 300
 ```
 
-
-    
+Cluster creation:
+```
+$./redis-cli --cluster create x.x.x.x:7000 x.x.x.x:7001 x.x.x.x:7002 x.x.x.x:7003 x.x.x.x:7004 x.x.x.x:7005 x.x.x.x:7006 x.x.x.x:7007 x.x.x.x:7008 --cluster-replicas 1
+```
